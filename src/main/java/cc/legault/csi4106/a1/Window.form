@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="cc.legault.csi4106.a1.Window">
   <grid id="27dc6" binding="wrapper" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="1016" height="400"/>
     </constraints>
     <properties>
       <background color="-1"/>
@@ -25,12 +25,18 @@
         <rowspec value="center:max(d;4px):noGrow"/>
         <rowspec value="top:4dlu:noGrow"/>
         <rowspec value="center:max(d;4px):noGrow"/>
+        <rowspec value="top:4dlu:noGrow"/>
+        <rowspec value="center:d:grow"/>
+        <rowspec value="top:4dlu:noGrow"/>
+        <rowspec value="center:max(d;4px):noGrow"/>
         <colspec value="fill:d:noGrow"/>
         <constraints border-constraint="East"/>
         <properties>
           <background color="-1"/>
         </properties>
-        <border type="none"/>
+        <border type="empty">
+          <size top="10" left="10" bottom="10" right="10"/>
+        </border>
         <children>
           <component id="23fa5" class="javax.swing.JLabel">
             <constraints>
@@ -48,7 +54,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="23533" class="javax.swing.JLabel" binding="destinationCity">
+          <component id="23533" class="javax.swing.JLabel">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <forms/>
@@ -57,7 +63,7 @@
               <text value="Destination City"/>
             </properties>
           </component>
-          <component id="95a22" class="javax.swing.JComboBox" default-binding="true">
+          <component id="95a22" class="javax.swing.JComboBox" binding="destinationCity">
             <constraints>
               <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
               <forms/>
@@ -90,31 +96,83 @@
             </constraints>
             <properties/>
           </component>
+          <grid id="2b317" layout-manager="GridBagLayout">
+            <constraints>
+              <grid row="18" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <background color="-1"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="8a09f" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <font style="1"/>
+                  <text value="CSI 4106"/>
+                </properties>
+              </component>
+              <component id="35fd0" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <enabled value="true"/>
+                  <font style="0"/>
+                  <text value="February 2015"/>
+                </properties>
+              </component>
+              <component id="3c6c1" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <font style="0"/>
+                  <text value="Philippe Legault"/>
+                </properties>
+              </component>
+              <component id="efe00" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <font style="0"/>
+                  <text value="6376254"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <component id="2b9f8" class="javax.swing.JSeparator">
+            <constraints>
+              <grid row="16" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <forms defaultalign-horz="false" defaultalign-vert="false"/>
+            </constraints>
+            <properties/>
+          </component>
         </children>
       </grid>
-      <grid id="ef27f" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+      <grid id="ef27f" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
         <constraints border-constraint="North"/>
         <properties>
           <background color="-1"/>
         </properties>
-        <border type="none"/>
+        <border type="empty">
+          <size top="10" left="10" bottom="10" right="10"/>
+        </border>
         <children>
-          <component id="6a344" class="javax.swing.JTextField" default-binding="true">
+          <component id="6f20e" class="javax.swing.JLabel">
             <constraints/>
             <properties>
-              <text value="Uninformed Search Algorithms"/>
-            </properties>
-          </component>
-          <component id="af0cd" class="javax.swing.JTextField" default-binding="true">
-            <constraints/>
-            <properties>
-              <text value="CSI 4106 February 2015"/>
-            </properties>
-          </component>
-          <component id="21ad9" class="javax.swing.JTextField" default-binding="true">
-            <constraints/>
-            <properties>
-              <text value="Philippe Legault 6376254"/>
+              <font size="48" style="0"/>
+              <foreground color="-3684409"/>
+              <text value="Uninformed Search Algorithms  "/>
             </properties>
           </component>
         </children>

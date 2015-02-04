@@ -1,15 +1,10 @@
 package cc.legault.csi4106.a1;
 
-import org.jgraph.graph.DefaultEdge;
-import org.jgraph.graph.Edge;
 import org.jgrapht.Graph;
 import com.mxgraph.layout.mxFastOrganicLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxConstants;
-import com.mxgraph.util.mxEvent;
-import com.mxgraph.util.mxEventObject;
-import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -21,9 +16,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class GraphVisualizer extends JPanel{
+public class GraphVisualizer extends JPanel {
 
-    public void setGraph(Graph<String, DefaultWeightedEdge> graph){
+    private mxGraphComponent graphComponent;
+
+    public GraphVisualizer(){
+        setBackground(Color.white);
+        setLayout(new BorderLayout());
+    }
+
+    public void setGraph(Graph<String, DefaultWeightedEdge> graph, String source, String target){
+
+        if(graphComponent != null)
+            remove(graphComponent);
+
         final mxGraph xGraph = new mxGraph();
 
         mxStylesheet stylesheet = new mxStylesheet();
@@ -32,75 +38,73 @@ public class GraphVisualizer extends JPanel{
         edgeStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_CONNECTOR);
         edgeStyle.put(mxConstants.STYLE_ENDARROW, mxConstants.NONE);
         edgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#7f8c8d");
-        edgeStyle.put(mxConstants.STYLE_NOLABEL, true);
+        edgeStyle.put(mxConstants.STYLE_NOLABEL, false);
 
         Map<String, Object> unselectedEdgeStyle = new HashMap<String, Object>(edgeStyle);
         unselectedEdgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#2980b9");
-        stylesheet.putCellStyle("selected", unselectedEdgeStyle);
+        unselectedEdgeStyle.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#ffffff");
+        edgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
+        stylesheet.putCellStyle("unselected", unselectedEdgeStyle);
 
         Map<String, Object> doubledEdgeStyle = new HashMap<>(edgeStyle);
         doubledEdgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#c0392b");
-        stylesheet.putCellStyle("unselected", doubledEdgeStyle);
+        stylesheet.putCellStyle("selected", doubledEdgeStyle);
 
-        Map<String, Object> vertexStyle = stylesheet.getDefaultVertexStyle();
-        vertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_ELLIPSE);
-        vertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#000000");
-        vertexStyle.put(mxConstants.STYLE_FONTCOLOR, "#ffffff");
-        stylesheet.putCellStyle("vertex", vertexStyle);
+        Map<String, Object> unselectedVertexStyle = stylesheet.getDefaultVertexStyle();
+        unselectedVertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_RECTANGLE);
+        unselectedVertexStyle.put(mxConstants.STYLE_SPACING, "1");
+        unselectedVertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#e1e1e1");
+        unselectedVertexStyle.put(mxConstants.STYLE_STROKECOLOR, "#e1e1e1");
+        unselectedVertexStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
+        stylesheet.putCellStyle("UnselectedVertex", unselectedVertexStyle);
+
+        Map<String, Object> selectedVertexStyle = new HashMap<>(unselectedVertexStyle);
+        selectedVertexStyle.put(mxConstants.STYLE_FILLCOLOR, "#000000");
+        selectedVertexStyle.put(mxConstants.STYLE_FONTCOLOR, "#ffffff");
+        stylesheet.putCellStyle("SelectedVertex", selectedVertexStyle);
 
         xGraph.setStylesheet(stylesheet);
 
         Map<String, mxCell> vertices = new HashMap<>();
         final Object parent = xGraph.getDefaultParent();
         for(String vertex: graph.vertexSet()){
-            mxCell cell = (mxCell) xGraph.insertVertex(parent, vertex, vertex, 0, 0, 20, 20, "vertex");
+
+            String style = "UnselectedVertex";
+            if (vertex.equals(source) || vertex.equals(target))
+                style = "SelectedVertex";
+
+            mxCell cell = (mxCell) xGraph.insertVertex(parent, vertex, vertex, 50, 50, 10, 10, style);
+            xGraph.updateCellSize(cell);
+
             for(Entry<String, mxCell> entry: vertices.entrySet()){
-                int numEdgeSelect = graph.getAllEdges(entry.getKey(), vertex).size();
-                if(numEdgeSelect == 1)
-                    xGraph.insertEdge(parent, null, "Edge", entry.getValue(), cell, "single");
-                else if(numEdgeSelect == 2)
-                    xGraph.insertEdge(parent, null, "Edge", entry.getValue(), cell, "double");
+                DefaultWeightedEdge edge = graph.getEdge(entry.getKey(), vertex);
+                if(edge != null)
+                    xGraph.insertEdge(parent, null, (int) graph.getEdgeWeight(edge), entry.getValue(), cell, "unselected");
+                /*else if(numEdgeSelect == 2)
+                    xGraph.insertEdge(parent, null, "Edge", entry.getValue(), cell, "double");*/
             }
             cell.setId(vertex);
             vertices.put(vertex, cell);
         }
 
-        // Define layout
-        mxFastOrganicLayout layout = new mxFastOrganicLayout(xGraph);
+        xGraph.setAutoSizeCells(true);
+        xGraph.setCellsResizable(true);
 
-        // Set all properties
-        //layout.setForceConstant(100);
-        layout.setDisableEdgeStyle(true);
-
-        // Layout graph
-        layout.execute(xGraph.getDefaultParent());
-
-
-        mxGraphComponent graphComponent = new mxGraphComponent(xGraph);
+        graphComponent = new mxGraphComponent(xGraph);
         graphComponent.setBorder(new EmptyBorder(10, 10, 10, 10));
         graphComponent.setBackground(Color.white);
         graphComponent.getViewport().setBackground(Color.white);
 
+        // Define layout
+        mxFastOrganicLayout layout = new mxFastOrganicLayout(xGraph);
+        layout.execute(xGraph.getDefaultParent());
+
         xGraph.setCellsEditable(false);
-        xGraph.setCellsMovable(true);
+        xGraph.setCellsMovable(false);
         xGraph.setCellsResizable(false);
-        xGraph.setCellsSelectable(true);
+        xGraph.setCellsSelectable(false);
 
-        /*xGraph.addListener(mxEvent.CELLS_MOVED, new mxIEventListener() {
-
-            @Override
-            public void invoke(Object sender, mxEventObject evt) {
-                //Realign all cells in reference graph
-                for(Object o: xGraph.getChildVertices(parent)){
-                    mxCell cell = (mxCell) o;
-                    XY xy = cellPositions.get(cell.getId());
-                    xy.x = cell.getGeometry().getX();
-                    xy.y = cell.getGeometry().getY();
-                }
-            }
-        });*/
-
-        add(graphComponent);
+        add(graphComponent, BorderLayout.CENTER);
         revalidate();
     }
 
