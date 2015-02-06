@@ -36,6 +36,7 @@ public class Window implements ActionListener {
         for(Algorithm algorithm: Algorithm.values())
             searchAlgorithm.addItem(algorithm.getName());
 
+        cityMapWrapper.setGraph(graph);
         actionPerformed(null);
 
     }
@@ -46,6 +47,7 @@ public class Window implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        cityMapWrapper.setGraph(graph, (String) sourceCity.getSelectedItem(), (String) destinationCity.getSelectedItem());
+        cityMapWrapper.setSource((String) sourceCity.getSelectedItem());
+        cityMapWrapper.setTarget((String) destinationCity.getSelectedItem());
     }
 }

@@ -19,13 +19,37 @@ import java.util.Map.Entry;
 public class GraphVisualizer extends JPanel {
 
     private mxGraphComponent graphComponent;
+    private Map<String, mxCell> cells = new HashMap<>();
+    private String lastSource, lastTarget;
+
 
     public GraphVisualizer(){
         setBackground(Color.white);
         setLayout(new BorderLayout());
     }
 
-    public void setGraph(Graph<String, DefaultWeightedEdge> graph, String source, String target){
+    public void setSource(String source){
+        if(cells.containsKey(source)) {
+            graphComponent.getGraph().getModel().beginUpdate();
+            if(this.lastSource!= null && this.lastSource != this.lastTarget)
+                cells.get(this.lastSource).setStyle("UnselectedVertex");
+            this.lastSource = source;
+            cells.get(source).setStyle("SelectedVertex");
+            graphComponent.getGraph().getModel().endUpdate();
+        }
+    }
+
+    public void setTarget(String target){
+        if(cells.containsKey(target)) {
+            if(this.lastTarget!= null && this.lastSource != this.lastTarget)
+                cells.get(this.lastTarget).setStyle("UnselectedVertex");
+            this.lastTarget = target;
+            cells.get(target).setStyle("SelectedVertex");
+            graphComponent.refresh();
+        }
+    }
+
+    public void setGraph(Graph<String, DefaultWeightedEdge> graph){
 
         if(graphComponent != null)
             remove(graphComponent);
@@ -68,12 +92,8 @@ public class GraphVisualizer extends JPanel {
         Map<String, mxCell> vertices = new HashMap<>();
         final Object parent = xGraph.getDefaultParent();
         for(String vertex: graph.vertexSet()){
-
-            String style = "UnselectedVertex";
-            if (vertex.equals(source) || vertex.equals(target))
-                style = "SelectedVertex";
-
-            mxCell cell = (mxCell) xGraph.insertVertex(parent, vertex, vertex, 50, 50, 10, 10, style);
+            mxCell cell = (mxCell) xGraph.insertVertex(parent, vertex, vertex, 50, 50, 10, 10, "UnselectedVertex");
+            cells.put(vertex, cell);
             xGraph.updateCellSize(cell);
 
             for(Entry<String, mxCell> entry: vertices.entrySet()){
