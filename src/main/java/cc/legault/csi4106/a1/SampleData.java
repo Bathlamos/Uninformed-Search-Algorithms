@@ -11,7 +11,7 @@ public class SampleData {
             "Drobeta", "Craiova", "Pitesti", "Rimnicu Vilcea", "Sibiu", "Fagaras", "Bucharest", "Giurgiu",
             "Urziceni", "Hirsova", "Eforie", "Vaslui", "Iasi", "Neamt"};
 
-    public static UnmodifiableUndirectedGraph<String, DefaultWeightedEdge> generateRomanianCities(){
+    public static SimpleWeightedGraph<String, DefaultWeightedEdge> generateRomanianCities(){
         SimpleWeightedGraph<String, DefaultWeightedEdge> graph = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 
         for(String city: romanianCities)
@@ -42,7 +42,7 @@ public class SampleData {
         addEdge(graph, "Vaslui", "Iasi", 92);
         addEdge(graph, "Neamt", "Iasi", 87);
 
-        return new UnmodifiableUndirectedGraph<>(graph);
+        return graph;
     }
 
     private static void addEdge(WeightedGraph<String, DefaultWeightedEdge> graph, String source, String target, int weight){

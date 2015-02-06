@@ -19,6 +19,8 @@ import java.util.Map.Entry;
 public class GraphVisualizer extends JPanel {
 
     private mxGraphComponent graphComponent;
+    private mxGraph xGraph;
+    private Graph<String, DefaultWeightedEdge> graph;
     private Map<String, mxCell> cells = new HashMap<>();
     private String lastSource, lastTarget;
 
@@ -30,12 +32,11 @@ public class GraphVisualizer extends JPanel {
 
     public void setSource(String source){
         if(cells.containsKey(source)) {
-            graphComponent.getGraph().getModel().beginUpdate();
             if(this.lastSource!= null && this.lastSource != this.lastTarget)
                 cells.get(this.lastSource).setStyle("UnselectedVertex");
             this.lastSource = source;
             cells.get(source).setStyle("SelectedVertex");
-            graphComponent.getGraph().getModel().endUpdate();
+            graphComponent.refresh();
         }
     }
 
@@ -49,12 +50,28 @@ public class GraphVisualizer extends JPanel {
         }
     }
 
+    public void setSelectedEdges(Iterable<DefaultWeightedEdge> edges){
+        Object[] edgeCells = xGraph.getAllEdges(cells.values().toArray());
+        for(Object edgeCell: edgeCells)
+            ((mxCell) edgeCell).setStyle("UnselectedEdge");
+
+        for(DefaultWeightedEdge edge: edges){
+            mxCell source = cells.get(graph.getEdgeSource(edge));
+            mxCell target = cells.get(graph.getEdgeTarget(edge));
+
+            mxCell edgeCell = (mxCell)xGraph.getEdgesBetween(source, target)[0];
+            edgeCell.setStyle("SelectedEdge");
+        }
+        graphComponent.refresh();
+    }
+
     public void setGraph(Graph<String, DefaultWeightedEdge> graph){
 
         if(graphComponent != null)
             remove(graphComponent);
 
-        final mxGraph xGraph = new mxGraph();
+        this.graph = graph;
+        xGraph = new mxGraph();
 
         mxStylesheet stylesheet = new mxStylesheet();
 
@@ -68,11 +85,11 @@ public class GraphVisualizer extends JPanel {
         unselectedEdgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#2980b9");
         unselectedEdgeStyle.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#ffffff");
         edgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
-        stylesheet.putCellStyle("unselected", unselectedEdgeStyle);
+        stylesheet.putCellStyle("UnselectedEdge", unselectedEdgeStyle);
 
         Map<String, Object> doubledEdgeStyle = new HashMap<>(edgeStyle);
         doubledEdgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#c0392b");
-        stylesheet.putCellStyle("selected", doubledEdgeStyle);
+        stylesheet.putCellStyle("SelectedEdge", doubledEdgeStyle);
 
         Map<String, Object> unselectedVertexStyle = stylesheet.getDefaultVertexStyle();
         unselectedVertexStyle.put(mxConstants.STYLE_SHAPE, mxConstants.SHAPE_RECTANGLE);
@@ -89,22 +106,19 @@ public class GraphVisualizer extends JPanel {
 
         xGraph.setStylesheet(stylesheet);
 
-        Map<String, mxCell> vertices = new HashMap<>();
         final Object parent = xGraph.getDefaultParent();
         for(String vertex: graph.vertexSet()){
             mxCell cell = (mxCell) xGraph.insertVertex(parent, vertex, vertex, 50, 50, 10, 10, "UnselectedVertex");
-            cells.put(vertex, cell);
             xGraph.updateCellSize(cell);
 
-            for(Entry<String, mxCell> entry: vertices.entrySet()){
+            for(Entry<String, mxCell> entry: cells.entrySet()){
                 DefaultWeightedEdge edge = graph.getEdge(entry.getKey(), vertex);
                 if(edge != null)
-                    xGraph.insertEdge(parent, null, (int) graph.getEdgeWeight(edge), entry.getValue(), cell, "unselected");
-                /*else if(numEdgeSelect == 2)
-                    xGraph.insertEdge(parent, null, "Edge", entry.getValue(), cell, "double");*/
+                   xGraph.insertEdge(parent, null, (int) graph.getEdgeWeight(edge), entry.getValue(), cell, "UnselectedEdge");
+
             }
             cell.setId(vertex);
-            vertices.put(vertex, cell);
+            cells.put(vertex, cell);
         }
 
         xGraph.setAutoSizeCells(true);

@@ -16,4 +16,11 @@ public enum Algorithm {
         return name;
     }
 
+    public static Algorithm fromName(String name){
+        for(Algorithm a: values())
+            if(a.name.equals(name))
+                return a;
+        return null;
+    }
+
 }
