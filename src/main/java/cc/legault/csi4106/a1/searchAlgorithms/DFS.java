@@ -1,19 +1,22 @@
 package cc.legault.csi4106.a1.searchAlgorithms;
 
-import com.google.common.collect.Lists;
 import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.*;
 
-public class BFS<V> implements UninformedSearchAlgorithm<V> {
+public class DFS<V> implements UninformedSearchAlgorithm<V> {
 
     private int maxNumberOfNodesInMemory = 0;
     private int totalNumberOfNodesGenerated = 0;
 
     @Override
     public <E extends DefaultWeightedEdge> List<E> findPath(SimpleWeightedGraph<V, E> graph, V origin, V destination) {
+
+        //Used to traverse the tree in DFS
+        Stack<V> stack = new Stack<>();
+        stack.add(origin);
 
         //Keep tracks of the visited nodes and their direct ancestor
         Map<V, V> parent = new HashMap<>();
@@ -22,14 +25,10 @@ public class BFS<V> implements UninformedSearchAlgorithm<V> {
         maxNumberOfNodesInMemory = 1;
         totalNumberOfNodesGenerated = 1;
 
-        //Used to traverse the tree in BFS
-        Queue<V> queue = new LinkedList<>();
-        queue.add(origin);
-
-        while(!queue.isEmpty()){
+        while(!stack.isEmpty()){
 
             //Extract the head of the queue
-            V currentNode = queue.remove();
+            V currentNode = stack.pop();
 
             //Compare the head of the queue with the destination
             if(currentNode.equals(destination)){
@@ -49,11 +48,11 @@ public class BFS<V> implements UninformedSearchAlgorithm<V> {
             for(V adjacentVertex: neighbourIndex.neighborsOf(currentNode))
                 if(!parent.containsKey(adjacentVertex)){
                     parent.put(adjacentVertex, currentNode);
-                    queue.add(adjacentVertex);
+                    stack.push(adjacentVertex);
                     totalNumberOfNodesGenerated++;
                 }
 
-            maxNumberOfNodesInMemory = Math.max(maxNumberOfNodesInMemory, queue.size());
+            maxNumberOfNodesInMemory = Math.max(maxNumberOfNodesInMemory, stack.size());
         }
 
         throw new RuntimeException("No path exist from the origin to the destination");

@@ -1,13 +1,14 @@
 package cc.legault.csi4106.a1.searchAlgorithms;
 
-import com.google.common.collect.Lists;
 import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.util.FibonacciHeap;
+import org.jgrapht.util.FibonacciHeapNode;
 
 import java.util.*;
 
-public class BFS<V> implements UninformedSearchAlgorithm<V> {
+public class UniformCostSearch<V> implements UninformedSearchAlgorithm<V> {
 
     private int maxNumberOfNodesInMemory = 0;
     private int totalNumberOfNodesGenerated = 0;
@@ -22,14 +23,16 @@ public class BFS<V> implements UninformedSearchAlgorithm<V> {
         maxNumberOfNodesInMemory = 1;
         totalNumberOfNodesGenerated = 1;
 
-        //Used to traverse the tree in BFS
-        Queue<V> queue = new LinkedList<>();
-        queue.add(origin);
+        // Priority Queue with O(1) running time for removeMin
+        FibonacciHeap<V> heap = new FibonacciHeap<>();
+        heap.insert(new FibonacciHeapNode<V>(origin), 0);
 
-        while(!queue.isEmpty()){
+        while(!heap.isEmpty()){
 
             //Extract the head of the queue
-            V currentNode = queue.remove();
+            FibonacciHeapNode<V> currentHeapNode = heap.removeMin();
+            V currentNode = currentHeapNode.getData();
+            double currentCost = currentHeapNode.getKey();
 
             //Compare the head of the queue with the destination
             if(currentNode.equals(destination)){
@@ -49,11 +52,12 @@ public class BFS<V> implements UninformedSearchAlgorithm<V> {
             for(V adjacentVertex: neighbourIndex.neighborsOf(currentNode))
                 if(!parent.containsKey(adjacentVertex)){
                     parent.put(adjacentVertex, currentNode);
-                    queue.add(adjacentVertex);
+                    double edgeCost = graph.getEdgeWeight(graph.getEdge(currentNode, adjacentVertex));
+                    heap.insert(new FibonacciHeapNode<V>(adjacentVertex), currentCost + edgeCost);
                     totalNumberOfNodesGenerated++;
                 }
 
-            maxNumberOfNodesInMemory = Math.max(maxNumberOfNodesInMemory, queue.size());
+            maxNumberOfNodesInMemory = Math.max(maxNumberOfNodesInMemory, heap.size());
         }
 
         throw new RuntimeException("No path exist from the origin to the destination");

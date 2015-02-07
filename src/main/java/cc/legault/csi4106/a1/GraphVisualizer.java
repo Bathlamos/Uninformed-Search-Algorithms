@@ -22,32 +22,20 @@ public class GraphVisualizer extends JPanel {
     private mxGraph xGraph;
     private Graph<String, DefaultWeightedEdge> graph;
     private Map<String, mxCell> cells = new HashMap<>();
-    private String lastSource, lastTarget;
-
 
     public GraphVisualizer(){
         setBackground(Color.white);
         setLayout(new BorderLayout());
     }
 
-    public void setSource(String source){
-        if(cells.containsKey(source)) {
-            if(this.lastSource!= null && this.lastSource != this.lastTarget)
-                cells.get(this.lastSource).setStyle("UnselectedVertex");
-            this.lastSource = source;
-            cells.get(source).setStyle("SelectedVertex");
-            graphComponent.refresh();
+    public void setTraversedCities(Iterable<String> cities){
+        for(mxCell vertex: cells.values())
+            vertex.setStyle("UnselectedVertex");
+        for(String city: cities){
+            if(cells.containsKey(city))
+                cells.get(city).setStyle("SelectedVertex");
         }
-    }
-
-    public void setTarget(String target){
-        if(cells.containsKey(target)) {
-            if(this.lastTarget!= null && this.lastSource != this.lastTarget)
-                cells.get(this.lastTarget).setStyle("UnselectedVertex");
-            this.lastTarget = target;
-            cells.get(target).setStyle("SelectedVertex");
-            graphComponent.refresh();
-        }
+        graphComponent.refresh();
     }
 
     public void setSelectedEdges(Iterable<DefaultWeightedEdge> edges){
@@ -84,11 +72,11 @@ public class GraphVisualizer extends JPanel {
         Map<String, Object> unselectedEdgeStyle = new HashMap<String, Object>(edgeStyle);
         unselectedEdgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#2980b9");
         unselectedEdgeStyle.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#ffffff");
-        edgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
         stylesheet.putCellStyle("UnselectedEdge", unselectedEdgeStyle);
 
-        Map<String, Object> doubledEdgeStyle = new HashMap<>(edgeStyle);
+        Map<String, Object> doubledEdgeStyle = new HashMap<>(unselectedEdgeStyle);
         doubledEdgeStyle.put(mxConstants.STYLE_STROKECOLOR, "#c0392b");
+        doubledEdgeStyle.put(mxConstants.STYLE_FONTCOLOR, "#000000");
         stylesheet.putCellStyle("SelectedEdge", doubledEdgeStyle);
 
         Map<String, Object> unselectedVertexStyle = stylesheet.getDefaultVertexStyle();
@@ -131,6 +119,7 @@ public class GraphVisualizer extends JPanel {
 
         // Define layout
         mxFastOrganicLayout layout = new mxFastOrganicLayout(xGraph);
+        layout.setMinDistanceLimit(5);
         layout.execute(xGraph.getDefaultParent());
 
         xGraph.setCellsEditable(false);

@@ -2,9 +2,6 @@ package cc.legault.csi4106.a1;
 
 import javax.swing.*;
 
-/**
- * Created by Philippe on 2/3/2015.
- */
 public class Main {
 
     public static void main(String[] args){
