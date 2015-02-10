@@ -1,16 +1,31 @@
+/**
+ * Philippe Legault - 6376254
+ *
+ * CSI 4106 - Artificial Intelligence I
+ * University of Ottawa
+ * February 2015
+ */
+
 package cc.legault.csi4106.a1;
 
-import org.jgraph.graph.Edge;
-import org.jgrapht.UndirectedGraph;
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.graph.*;
 
+/**
+ * Generates a world that can be searched, in the form of a graph.
+ * The jGraphT library is used internally.
+ */
 public class SampleData {
 
+    //Set of cities in the world
     private static String[] romanianCities = {"Oradea", "Zerind", "Arad", "Timisoara", "Lugoj", "Mehadia",
             "Drobeta", "Craiova", "Pitesti", "Rimnicu Vilcea", "Sibiu", "Fagaras", "Bucharest", "Giurgiu",
             "Urziceni", "Hirsova", "Eforie", "Vaslui", "Iasi", "Neamt"};
 
+    /**
+     * Generate a set of sample Romanian cities interconnected by roads.
+     * @return A simple undirected graph, where vertices represent cities.
+     */
     public static SimpleWeightedGraph<String, DefaultWeightedEdge> generateRomanianCities(){
         SimpleWeightedGraph<String, DefaultWeightedEdge> graph = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 
@@ -45,6 +60,13 @@ public class SampleData {
         return graph;
     }
 
+    /**
+     * Adds a weighted edge between two cities
+     * @param graph The graph to which to add the edge.
+     * @param source The tail of the edge.
+     * @param target The head of the edge.
+     * @param weight The weight of the edge.
+     */
     private static void addEdge(WeightedGraph<String, DefaultWeightedEdge> graph, String source, String target, int weight){
         DefaultWeightedEdge e = graph.addEdge(source, target);
         graph.setEdgeWeight(e, weight);

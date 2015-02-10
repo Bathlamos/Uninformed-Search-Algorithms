@@ -1,7 +1,18 @@
+/**
+ * Philippe Legault - 6376254
+ *
+ * CSI 4106 - Artificial Intelligence I
+ * University of Ottawa
+ * February 2015
+ */
+
 package cc.legault.csi4106.a1;
 
 import javax.swing.*;
 
+/**
+ * Launcher for the application. Initializes the GUI.
+ */
 public class Main {
 
     public static void main(String[] args){
