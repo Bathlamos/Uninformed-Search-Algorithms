@@ -34,19 +34,23 @@ public class UniformCostSearch<V> implements UninformedSearchAlgorithm<V> {
         //Keep tracks of the visited nodes and their direct ancestor
         Map<V, V> parent = new HashMap<>();
         parent.put(origin, null);
+        Map<V, FibonacciHeapNode<V>> fringe = new HashMap<>();
 
         maxNumberOfNodesInMemory = 1;
         totalNumberOfNodesGenerated = 1;
 
         // Priority Queue with O(1) running time for removeMin
         FibonacciHeap<V> heap = new FibonacciHeap<>();
-        heap.insert(new FibonacciHeapNode<V>(origin), 0);
+        FibonacciHeapNode<V> node = new FibonacciHeapNode<V>(origin);
+        fringe.put(origin, node);
+        heap.insert(node, 0);
 
         while(!heap.isEmpty()){
 
             //Extract the head of the queue
             FibonacciHeapNode<V> currentHeapNode = heap.removeMin();
             V currentNode = currentHeapNode.getData();
+            fringe.remove(currentNode);
             double currentCost = currentHeapNode.getKey();
 
             //Compare the head of the queue with the destination
@@ -64,15 +68,25 @@ public class UniformCostSearch<V> implements UninformedSearchAlgorithm<V> {
             //Add the adjacent vertices to the queue,
             // if they haven't been visited yet
             NeighborIndex<V, E> neighbourIndex = new NeighborIndex<>(graph);
-            for(V adjacentVertex: neighbourIndex.neighborsOf(currentNode))
-                if(!parent.containsKey(adjacentVertex)){
+            for(V adjacentVertex: neighbourIndex.neighborsOf(currentNode)) {
+                double edgeCost = graph.getEdgeWeight(graph.getEdge(currentNode, adjacentVertex));
+                double newEdgeCost = currentCost + edgeCost;
+                if (!fringe.containsKey(adjacentVertex)) {
                     parent.put(adjacentVertex, currentNode);
-                    double edgeCost = graph.getEdgeWeight(graph.getEdge(currentNode, adjacentVertex));
-                    heap.insert(new FibonacciHeapNode<V>(adjacentVertex), currentCost + edgeCost);
+                    node = new FibonacciHeapNode<V>(adjacentVertex);
+                    fringe.put(adjacentVertex, node);
+                    heap.insert(node, newEdgeCost);
                     totalNumberOfNodesGenerated++;
+                } else {
+                    //Check if we have a lower cost, and update the node if true
+                    if (fringe.get(adjacentVertex).getKey() > newEdgeCost) {
+                        heap.decreaseKey(fringe.get(adjacentVertex), newEdgeCost);
+                        parent.put(adjacentVertex, currentNode);
+                    }
                 }
+            }
 
-            maxNumberOfNodesInMemory = Math.max(maxNumberOfNodesInMemory, heap.size());
+            maxNumberOfNodesInMemory = Math.max(maxNumberOfNodesInMemory, parent.size());
         }
 
         throw new RuntimeException("No path exist from the origin to the destination");
